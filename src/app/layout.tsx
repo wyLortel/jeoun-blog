@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
+import Footer from '../components/layouts/Footer';
+import Header from '../components/layouts/Header';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -24,7 +27,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className="flex min-h-screen flex-col">
+          {/* Header 영역 */}
+          <Header />
+          {/* Main 영역 */}
+          <main className="flex-1">{children}</main>
+
+          {/* Footer 영역 */}
+          <Footer />
+        </div>
+      </body>
     </html>
   );
 }
+
+//레이아웃은 여러 페이지 간에 공유되는 ui 페이지간 이동시 레이아웃은 상태를 유지하고 상호작용하며 리렌더링 되지않음
+//app 하위에 잇는 레리아웃 파일을 루트 레이아웃라고 하며 필수로 존재해야ㅕ하며 html과 body태그를 포함해야 된다
+//레이아웃은 중첩될수잇다 중첩된 레이아웃은 자식 레이아웃이나 페이지를 감싸게 된다 그리고 하위 레이아웃은 그 하위 페이지나 하위 레이아웃을 감싼다
+// 컴포넌트에 레이아웃을 만들면 선택적 적용이 가능하나 그냥 레이이아웃에 넣어버리면 강제적으로 적용되니 골라 사용하면 될듯?

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'; //React에서 렌더링 가능한 모든 노드(ReactNode) (JSX, 문자열, 숫자, 배열 등)TypeScript용 타입 정의로만 쓰이는듯
 //lucide-react라이브러리를 사용하면 아이콘 사용할수잇음
-import { Code2, User, Briefcase, Newspaper, Coffee, Github } from 'lucide-react';
+import { User, Briefcase, Coffee, Github } from 'lucide-react';
 import Link from 'next/link'; // Next.js 라우팅용 Link 컴포넌트 추가
 
 interface AboutLayoutProps {
@@ -9,9 +9,7 @@ interface AboutLayoutProps {
 
 const menuItems = [
   { icon: User, label: '프로필', href: '/about' },
-  { icon: Code2, label: '기술 스택', href: '/about/skills' },
   { icon: Briefcase, label: '프로젝트', href: '/about/projects' },
-  { icon: Coffee, label: '컨택트', href: '/about/contact' },
   { icon: Github, label: 'Github', href: 'https://github.com/wyLortel', external: true },
 ];
 

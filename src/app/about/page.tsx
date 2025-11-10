@@ -1,6 +1,6 @@
-import AboutHeader from '@/src/components/about/AboutHeader';
-import EducationTimeline from '@/src/components/about/EducationTimeline';
-import SkillSection from '@/src/components/about/SkillSection';
+import AboutHeader from './components/AboutHeader';
+import EducationTimeline from './components/EducationTimeline';
+import SkillSection from './components/SkillSection';
 
 export default function AboutPage() {
   return (

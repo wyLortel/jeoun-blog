@@ -122,3 +122,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Tailwind가 자동으로 전역 정의하는 반응형 클래스 */
+.container {
+  @apply mx-auto max-w-6xl px-4;
+  width: 100%;
+}

@@ -1,5 +1,11 @@
 import Image from 'next/image';
 
+const contactInfo = [
+  { label: 'Email', value: 'young99@g.yju.ac.kr' },
+  { label: 'Birth', value: '1999-11-26' },
+  { label: 'Phone', value: '010-0000-0000' },
+];
+
 export default function AboutHeader() {
   return (
     <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
@@ -13,18 +19,12 @@ export default function AboutHeader() {
         </p>
 
         <address className="border-primary space-y-1 border-l-4 pl-4 text-sm leading-relaxed not-italic md:text-base">
-          <p>
-            <span className="text-primary mr-3 font-semibold">Email</span>
-            young99@g.yju.ac.kr
-          </p>
-          <p>
-            <span className="text-primary mr-3 font-semibold">Birth</span>
-            1999-11-26
-          </p>
-          <p>
-            <span className="text-primary mr-3 font-semibold">Phone</span>
-            010-0000-0000
-          </p>
+          {contactInfo.map((item) => (
+            <p key={item.label}>
+              <span className="text-primary mr-3 font-semibold">{item.label}</span>
+              {item.value}
+            </p>
+          ))}
         </address>
       </div>
 

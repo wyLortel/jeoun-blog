@@ -5,9 +5,11 @@ export default function Header() {
   return (
     <header className="bg-background sticky top-0 z-50 border-b">
       <div className="container mx-auto flex h-18 items-center justify-between px-4">
-        <h1 className="text-2xl font-bold">
-          Jeoung<span className="font-medium">Blog</span>
-        </h1>
+        <Link href="/">
+          <h1 className="text-2xl font-bold">
+            Jeoung<span className="font-medium">Blog</span>
+          </h1>
+        </Link>
         <nav className="ml-auto flex items-center gap-8">
           <Link href="/" className="hover:text-primary font-medium">
             Home

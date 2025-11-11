@@ -14,8 +14,8 @@ export default function AboutHeader() {
         <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">Jeoung Wooyoung</h2>
         <p className="text-base leading-relaxed text-gray-700 md:text-lg">
           私は、チーム全体を支えるエンジニアになりたいです。
-          <br /> 技術だけでなく、人との信頼や調和を大切にし、
-          <br /> 周りが安心して働ける環境を作りたいと思っています。
+          技術だけでなく、人との信頼や調和を大切にし、
+          周りが安心して働ける環境を作りたいと思っています。
         </p>
 
         <address className="border-primary space-y-1 border-l-4 pl-4 text-sm leading-relaxed not-italic md:text-base">

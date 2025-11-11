@@ -1,4 +1,4 @@
-import { Badge } from '@/src/components/ui/badge';
+import { Badge } from '@/src/app/_components/ui/badge';
 
 const skills = ['React', 'JavaScript', 'Python', 'Next.js', 'Java', 'TypeScript'];
 
@@ -24,7 +24,7 @@ export default function SkillSection() {
 
       <div>
         <h3 className="text-primary text-2xl font-bold">Programming</h3>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3">
           {skills.map((skill) => (
             <Badge key={skill} className="text-l px-5 py-3 font-semibold">
               {skill}

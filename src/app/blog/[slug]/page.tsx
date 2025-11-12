@@ -6,30 +6,111 @@ import Link from 'next/link';
 interface TableOfContentsItem {
   id: string;
   title: string;
+  items?: TableOfContentsItem[];
 }
 
 const mockTableOfContents: TableOfContentsItem[] = [
   {
-    id: '1',
+    id: 'intro',
+    title: '소개',
+    items: [],
+  },
+  {
+    id: 'getting-started',
     title: '시작하기',
+    items: [
+      {
+        id: 'prerequisites',
+        title: '사전 준비사항',
+        items: [
+          {
+            id: 'node-installation',
+            title: 'Node.js 설치',
+          },
+          {
+            id: 'npm-setup',
+            title: 'NPM 설정',
+          },
+        ],
+      },
+      {
+        id: 'project-setup',
+        title: '프로젝트 설정',
+        items: [
+          {
+            id: 'create-project',
+            title: '프로젝트 생성',
+          },
+          {
+            id: 'folder-structure',
+            title: '폴더 구조',
+          },
+        ],
+      },
+    ],
   },
   {
-    id: '2',
+    id: 'shadcn-ui-setup',
     title: 'Shadcn UI 설정하기',
-  },
-  {
-    id: '3',
-    title: '블로그 구조 설계',
-  },
-  {
-    id: '4',
-    title: '블로그 디자인',
-  },
-  {
-    id: '5',
-    title: '블로그 배포',
+    items: [
+      {
+        id: 'installation',
+        title: '설치 방법',
+        items: [
+          {
+            id: 'cli-installation',
+            title: 'CLI 도구 설치',
+          },
+          {
+            id: 'component-setup',
+            title: '컴포넌트 설정',
+          },
+        ],
+      },
+      {
+        id: 'configuration',
+        title: '환경 설정',
+        items: [
+          {
+            id: 'theme-setup',
+            title: '테마 설정',
+          },
+          {
+            id: 'typography',
+            title: '타이포그래피',
+          },
+        ],
+      },
+    ],
   },
 ];
+
+// hover:text-foreground 자동으로 색이 바귐 다크모드 일땐 흰 라이트는 검정
+//text-muted-foreground 위에 기본 색보다는 밝거나 흐릿한 보조 텍스트 색상 부제목이나 상세 정보 절 강조되는부분에 사용
+function TableOfContentsLink({ item }: { item: TableOfContentsItem }) {
+  return (
+    <div className="py-1">
+      <Link
+        href={`#${item.id}`}
+        className="text-muted-foreground hover:text-foreground block text-sm transition-colors"
+      >
+        {item.title}
+      </Link>
+
+      {/* 요소가 안에 있으면 재귀 호출을 통해 하위 목차를 렌더링 */}
+      {item.items && item.items.length > 0 && (
+        <div className="border-border/70 mt-1 ml-4 space-y-1 border-l pl-3">
+          {item.items.map((subItem) => (
+            //  key는 리액트 엔진이 Virtual DOM을 비교할 때
+            // 항목이 바뀌었는지 구별하기 위한 식별자
+            // key가 같으면 재사용, 다르면 새로 렌더링
+            <TableOfContentsLink key={subItem.id} item={subItem} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function BlogPost() {
   return (
@@ -44,8 +125,8 @@ export default function BlogPost() {
           </div>
 
           {/* 메타정보 */}
-          <div className="text-muted-foreground text-l flex justify-between">
-            <div className="mt-5 flex items-center gap-4">
+          <div className="text-muted-foreground text-l mt-5 flex items-center justify-between">
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
                 <span>정우영</span>
@@ -221,20 +302,18 @@ export default function BlogPost() {
             </Link>
           </nav>
         </section>
-        <aside>
-          <div className="bg-muted/20 space-y-4 rounded-lg p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold">목차</h3>
-            <nav className="space-y-3 text-sm">
-              {mockTableOfContents.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className="hover:text-foreground text-muted-foreground block font-medium transition-colors"
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </nav>
+        {/* 목차 */}
+        <aside className="relative">
+          {/* 헤더 높이 고려해서 top 설정 */}
+          <div className="top- sticky top-[var(--header-hight)]">
+            <div className="space-y-4 rounded-lg p-6 backdrop-blur-sm">
+              <h3 className="text-lg font-semibold">목차</h3>
+              <nav className="space-y-3 text-sm">
+                {mockTableOfContents.map((item) => (
+                  <TableOfContentsLink key={item.id} item={item} />
+                ))}
+              </nav>
+            </div>
           </div>
         </aside>
       </div>

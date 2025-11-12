@@ -1,5 +1,5 @@
 import { Badge } from '@/src/app/_components/ui/badge';
-import { NotionTag } from '@/types/notion';
+import { NotionTag } from '@/types/blog';
 import Link from 'next/link';
 
 interface TagSectionProps {

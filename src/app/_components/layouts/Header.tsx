@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Header() {
   return (
     <header className="bg-background sticky top-0 z-50 border-b">
-      <div className="container mx-auto flex h-18 items-center justify-between px-4">
+      <div className="container mx-auto flex h-[var(--header-hight)] items-center justify-between px-4">
         <Link href="/">
           <h1 className="text-2xl font-bold">
             Jeoung<span className="font-medium">Blog</span>

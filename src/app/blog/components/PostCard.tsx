@@ -3,9 +3,9 @@
 
 import { Badge } from '@/src/app/_components/ui/badge';
 import { Card, CardContent } from '@/src/app/_components/ui/card';
-import { NotionPost } from '@/types/notion';
+import { NotionPost } from '@/types/blog';
 import { format } from 'date-fns'; //날짜를 원하는 형태로 포맷팅　 해주는 함수야
-import { ja } from 'date-fns/locale'; //날짜를 한국식으로 표시하는 옵션 저거 두개가 같이 사용되는듯 데이터 객체를 이쁘게 쓰기위해
+import { ko } from 'date-fns/locale'; //날짜를 한국식으로 표시하는 옵션 저거 두개가 같이 사용되는듯 데이터 객체를 이쁘게 쓰기위해
 import { Calendar, User } from 'lucide-react';
 import Image from 'next/image';
 
@@ -23,6 +23,7 @@ export function PostCard({ post }: PostCardProps) {
           <h2 className="group-hover:text-primary mb-2 text-xl font-bold transition-colors">
             {post.title}
           </h2>
+          {/*line-clamp-2 두줄까지만 보여주고 넘어가면 .. 처리 leading-relaxed줄 간격처리 여유롭게  */}
           {post.description && (
             <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
               {post.description}
@@ -34,11 +35,11 @@ export function PostCard({ post }: PostCardProps) {
           <div className="mb-5 flex flex-wrap gap-2">
             {post.tags?.map((tag) => (
               <Badge
-                key={tag.id}
+                key={tag}
                 variant="secondary"
                 className="bg-primary/10 text-primary hover:bg-primary/20 font-medium transition-colors"
               >
-                {tag.name}
+                {tag}
               </Badge>
             ))}
           </div>
@@ -48,7 +49,7 @@ export function PostCard({ post }: PostCardProps) {
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
                 {/* format(날짜객체, 'PPP', { locale: ko }) 이런 문법으로 사용  ppp 는 년 월 일 p하나 더붙으면 요일까지*/}
-                <time>{format(new Date(post.date), 'PPP', { locale: ja })}</time>
+                <time>{format(new Date(post.date), 'PPP', { locale: ko })}</time>
               </div>
             )}
           </div>

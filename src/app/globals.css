@@ -78,6 +78,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --primary: oklch(0.79 0.14 250); /* #73B1FB */
+  --header-hight: 3.5rem;
 }
 
 .dark {

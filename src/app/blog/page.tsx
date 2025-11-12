@@ -1,8 +1,9 @@
-import { PostCard } from '@/features/blog/PostCard';
+import { PostCard } from '@/src/app/blog/components/PostCard';
 import Link from 'next/link';
 import PopularPosts from './components/PopularPosts';
 import TagSection from './components/TagSection';
 import Image from 'next/image';
+import { getPublishedPosts } from '../../lib/notion';
 
 const mockTags = [
   { id: '1', name: '전체' },
@@ -13,34 +14,8 @@ const mockTags = [
   { id: '6', name: 'Next.js' },
 ];
 
-const mockPosts = [
-  {
-    id: '1',
-    title: 'Next.js 13으로 블로그 만들기',
-    description: 'Next.js 13과 Notion API를 활용하여 개인 블로그를 만드는 방법을 알아봅니다.',
-    coverImage: 'https://picsum.photos/800/400',
-    tags: [
-      { id: '1', name: 'Next.js' },
-      { id: '2', name: 'React' },
-    ],
-    authors: '짐코딩',
-    date: '2024-02-01',
-  },
-  {
-    id: '2',
-    title: 'TypeScript 기초 다지기',
-    description: 'TypeScript의 기본 문법과 실전에서 자주 사용되는 패턴들을 살펴봅니다.',
-    coverImage: 'https://picsum.photos/800/401',
-    tags: [
-      { id: '3', name: 'TypeScript' },
-      { id: '4', name: 'JavaScript' },
-    ],
-    authors: '짐코딩',
-    date: '2024-01-15',
-  },
-];
-
-export default function Blog() {
+export default async function Blog() {
+  const posts = await getPublishedPosts();
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-[75%_25%] gap-6">
@@ -61,8 +36,8 @@ export default function Blog() {
 
           {/* 게시글 목록 */}
           <div className="space-y-6">
-            {mockPosts.map((post) => (
-              <Link href={`/blog/${post.id}`} key={post.id} className="block">
+            {posts.map((post) => (
+              <Link href={`/blog/${post.slug}`} key={post.id} className="block">
                 <PostCard post={post} />
               </Link>
             ))}

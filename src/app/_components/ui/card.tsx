@@ -5,7 +5,7 @@ import * as React from 'react';
 //clsx() 조건부 클래스 문자열을 깔끔하게 만들어줌 &&이런거 써서 조건문으로 스타일링 가능하게
 //twMerge() 중복된 Tailwind 클래스 자동 병합 (p-2 p-4 → p-4)
 // 저거 두개를 합쳐놓은게  cn
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 
 //div>가 가질 수 있는 모든 속성을 받아들일 수 있다. React.ComponentProps<'div'> 이건 div모든 타입 다받아 이런뜻
 //props는 항상 객체

@@ -1,16 +1,26 @@
-import type { NextConfig } from 'next';
+// next.config.mjs (또는 next.config.js)
+
+// MDX 플러그인 불러오기
+import createMDX from '@next/mdx';
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const baseConfig = {
+  reactStrictMode: true,
   images: {
     domains: [
-      'images.unsplash.com', // 일반 Unsplash
-      'plus.unsplash.com', // 프리미엄 Unsplash (지금 에러 원인)
-      'static.notion-static.com', // Notion 이미지
-      'www.notion.so', // Notion 내부 경로
+      'images.unsplash.com',
+      'plus.unsplash.com',
+      'static.notion-static.com',
+      'www.notion.so',
     ],
   },
-  reactStrictMode: true,
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
 };
 
-module.exports = nextConfig;
+// MDX 플러그인 활성화
+const withMDX = createMDX({
+  // 필요하면 remark/rehype 플러그인 옵션 넣기
+});
+
+// MDX와 기존 설정 합치기
+export default withMDX(baseConfig);

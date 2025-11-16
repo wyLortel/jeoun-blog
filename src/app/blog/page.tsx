@@ -3,19 +3,20 @@ import Link from 'next/link';
 import PopularPosts from './components/PopularPosts';
 import TagSection from './components/TagSection';
 import Image from 'next/image';
-import { getPublishedPosts } from '../../lib/notion';
+import { getPublishedPosts, getTags } from '../../../lib/notion';
 
-const mockTags = [
-  { id: '1', name: '전체' },
-  { id: '2', name: 'HTML' },
-  { id: '3', name: 'CSS' },
-  { id: '4', name: 'JavaScript' },
-  { id: '5', name: 'React' },
-  { id: '6', name: 'Next.js' },
-];
+//Promise.all 병렬실행 비동기 요청을 동시에 실행 둘다 끝날때까지 동시에 기다임
+interface HomeProps {
+  searchParams: Promise<{ tag?: string }>;
+}
 
-export default async function Blog() {
-  const posts = await getPublishedPosts();
+//전체면 태그가 없으니 필터 안 거쳐서 전체가 나온다. 태그가 있으면 필터가 걸린다.
+export default async function Home({ searchParams }: HomeProps) {
+  //searchParams 이 이름으로 하면 nextjs가 현재 searchParams의 객체를받음 페이지정보드같으거 url
+  const { tag } = await searchParams;
+  const selectedTag = tag || '전체';
+  const [posts, tags] = await Promise.all([getPublishedPosts(selectedTag), getTags()]);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-[75%_25%] gap-6">
@@ -47,7 +48,7 @@ export default async function Blog() {
         {/* 사이드바 */}
         <aside className="ml-2 space-y-10">
           <PopularPosts />
-          <TagSection tags={mockTags} />
+          <TagSection tags={tags} />
         </aside>
       </div>
     </div>

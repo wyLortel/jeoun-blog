@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Markdown/본문을 자동으로 예쁘게 꾸며줌 안하면 하나하나 꾸며줘야함  */
+@plugin '@tailwindcss/typography';
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

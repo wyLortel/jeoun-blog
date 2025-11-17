@@ -1,16 +1,15 @@
 'use client'; //next js는 모든 컴포턴트가 서버에서 렌더링 되지만 use client을 사용하면 클라이언트 사이드 렌더링을 사용
+import { formatDate } from '@/lib/date';
 //리액트 훅 이나 이벤트는 브라우저가 실행하기에 use cilent를 적어줘야함
 
 import { Badge } from '@/src/app/_components/ui/badge';
 import { Card, CardContent } from '@/src/app/_components/ui/card';
-import { NotionPost } from '@/types/blog';
-import { format } from 'date-fns'; //날짜를 원하는 형태로 포맷팅　 해주는 함수야
-import { ko } from 'date-fns/locale'; //날짜를 한국식으로 표시하는 옵션 저거 두개가 같이 사용되는듯 데이터 객체를 이쁘게 쓰기위해
+import { Post } from '@/types/blog';
 import { Calendar, User } from 'lucide-react';
 import Image from 'next/image';
 
 interface PostCardProps {
-  post: NotionPost;
+  post: Post;
 }
 
 export function PostCard({ post }: PostCardProps) {
@@ -49,7 +48,7 @@ export function PostCard({ post }: PostCardProps) {
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
                 {/* format(날짜객체, 'PPP', { locale: ko }) 이런 문법으로 사용  ppp 는 년 월 일 p하나 더붙으면 요일까지*/}
-                <time>{format(new Date(post.date), 'PPP', { locale: ko })}</time>
+                <time>{formatDate(post.date)}</time>
               </div>
             )}
           </div>

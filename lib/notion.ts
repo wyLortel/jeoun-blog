@@ -1,38 +1,149 @@
-//lib/notion.ts는 노션 API와 관련된 모든 백엔드 로직, 데이터 관련 함수들을 모아둔 곳이에요.
+//lib/notion.ts는 노션 API와 관련된 모든 백엔드 로직 데이터 관련 함수들을 모아둔 곳이에요.
 
-//노션 공식 SDK — 노션 API를 더 쉽게 호출할 수 있도록 도와주는 라이브러리
+//노션 공식 sdk 노션 api를 쉽게 호출할수록 도와줌
 import { Client } from '@notionhq/client';
 
-//타입을 자주 정의하기 때문에 따로 파일로 만들어 import 해요 (유지보수 편하게)
-import type { NotionPost, NotionTag } from '@/types/blog';
+//타입을 자주 정의하기에 타입을 따로 파일로 만듥ㅎ import
+import type { Post, NotionTag } from '@/types/blog';
 
-//노션에서 전달받는 데이터를 타입스크립트에서 사용하기 위해 필요한 타입들을 import
-import type {
-  PageObjectResponse,
-  PersonUserObjectResponse,
-} from '@notionhq/client/build/src/api-endpoints';
+//노션에서 오는 형태를 타입스크립트 형태로 바꿈
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-//노션 API를 호출할 클라이언트 생성
-// new Client({ auth: ... })는 SDK에서 제공하는 기본 생성자.
-// process.env.NOTION_TOKEN은 환경 변수에 저장된 비밀 키를 불러오는 것.
-// process.env는 Node.js 실행 프로세스에서 자동으로 제공되는 전역 객체로,
-// 우리가 직접 import하지 않아도 항상 접근이 가능합.
+//노션api에서 가져온 데이터를 마크다운 텍스트로 바궈주는 라이브러리
+//원래 노션은 모든 요소(제목 문단)을 json블록으로 저장 하지만 브라우저로 html로 렌더링하면 복잡하다
+//하지만 마크다운으로 변경하면 문자열만 렌더링하면됨으로 Markdown 렌더러로 한방에 렌더링 할수잇다
+//각 블록마다 구조가 다르기 때문에 → 타입별로 분기(if문) 를 써야함.
+// 그렇지 않으면 어떤 블록은 text 필드가 없고, 어떤 건 file이 있고...
+import { NotionToMarkdown } from 'notion-to-md';
 
-// Next.js는 Node.js 위에서 실행되기 때문에 서버 환경에서 코드를 먼저 실행하고,
-// 그 결과로 만들어진 HTML을 클라이언트(브라우저)로 전달해요.
-// 이 구조 덕분에 클라이언트 쪽 코드에는 API 키나 비밀번호가 노출되지 않아요.
-// (즉, React에서는 불가능한 환경변수 보안이 가능하다는 뜻)
-
-// export는 여러 개 가능하지만, export default는 파일당 한 개만 가능.
-// export default는 이름을 자유롭게 바꿔 import할 수 있고,
-// 일반 export는 반드시 동일한 이름으로 import해야함.
+//노션api를 호출할 클라이언트 생성
+//new Client({ auth: ... }): SDK가 요구하는 생성자.
+//process.env.NOTION_TOKEN 프로세스는 Node.js 실행 프로세스 전역 객체 window같은 전역이라는것을 알려주기위해
+//환경 변수는 운영체제나 서버가 실행될때 프로그램이 참고할 설정값 즉 코드 바깥에잇는 설정파일
+//next js는 node js에서 돌아감 위도우가 아닌 그래서 서버nodejs에서 먼저 코드를 실행한뒤 html결과를 만들어 브라우저에 보내줌 즉 서버에서 먼저 들고 결과만 클라이언트로 보내준다
+//이 구조 덕분에 브라우저로 안넘어가고 nextjs는 자동으로 클라이언트에 노출이 되지않게 보호함 그래서 api키나 비밀번호를 안전하게 보호 가능
+//그럼 왜 리액트는 안되나? 리액트는 node js 서버같은게 없이 브라우저 위에서 돌아감 그래서 환경변수라는 개념이 아에없음
+//process.env는 Node.js가 실행될 때 자동으로 만들어주는 전역 객체라서 우리가 직접 import를 하지않아도 항상 존재하는듯 하다
+//export 한파일에서 여러 파일 보낼수잇음 export default 이건 대표로 하나만 보내는것 그리고 export는 이름이 같아야하지만 export default는 이름을 마음대로 바꿀수잇음
 export const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
+  auth: process.env.NOTION_TOKEN, //이건 생성자
 });
+
+//notion은 아까 우리가 api키를 넘겨 줘서 만든Notion API 객체
+//notionClient: notion(이건 내가 정한거)  이런 형식으로(노션에서 정해준 형식) 내가만든 노션을 NotionToMarkdown생성자로 넘기면 마크다운으로 변경할 준비를하게된것
+const n2m = new NotionToMarkdown({ notionClient: notion });
+
+//즉 이 함수는 우리가 가져온 (아래함수에서 만들 page안에 여러 프로퍼티들을 나누어서 쓸수도잇게)하는 함수
+//page(나중에 받을 페이지 노션글 값들 그거의 형태가 PageObjectResponse))
+//Post 우리가 타입을 인터페이스로 선언해줫던것 그것으로 값을 받겟다
+function getPostMetadata(page: PageObjectResponse): Post {
+  //구조 분해 할당으로 page.properties만 꺼냄
+  //프로파티 안에는 내가 노션에서 정해준 프로파티들이 들어가잇음
+  const { properties } = page;
+
+  //cover은 PageObjectResponse의['cover']을 매개변수 타입으로 지정
+  //노션에들어오는 커버이미지가 여러개일수잇으니 방식을 구분해서 받아줘야함 그래서 그걸 위한 내부함수구현
+  const getCoverImage = (cover: PageObjectResponse['cover']) => {
+    if (!cover) return ''; //
+
+    switch (cover.type) {
+      case 'external': //외부url 연결 경우
+        return cover.external.url;
+      case 'file': //내부 url 연결경우
+        return cover.file.url;
+      default: // 아니면 없음
+        return '';
+    }
+  };
+
+  //이렇게해서 노션 api에서 내가 원하는 인터페이스로 지정햇던 값들만 반환가능
+  return {
+    id: page.id,
+    //타입은 노션 공식문서에서 확인이 가능 ??는 없으면 빈값넣기 [0]쓰는이유는 타이틀 배열의 첫번째 객체에 제목이 들어잇음 만약 빈값이들어잇어도 실행되게 하기위해서 넣어놈
+    title: properties.Title.type === 'title' ? (properties.Title.title[0]?.plain_text ?? '') : '',
+    description:
+      properties.Description.type === 'rich_text'
+        ? (properties.Description.rich_text[0]?.plain_text ?? '')
+        : '',
+    coverImage: getCoverImage(page.cover),
+    //태그는 맵함수로 원래 배열에서 태그만 빼내어 새로운 배열 만들음
+    tags:
+      properties.Tags.type === 'multi_select'
+        ? properties.Tags.multi_select.map((tag) => tag.name)
+        : [],
+    date: properties.Date.type === 'date' ? (properties.Date.date?.start ?? '') : '',
+    modifiedDate: page.last_edited_time,
+    slug:
+      properties.Slug.type === 'rich_text'
+        ? (properties.Slug.rich_text[0]?.plain_text ?? page.id)
+        : page.id,
+  };
+}
+
+export const getPostBySlug = async (
+  slug: string //이글의 식별자 slug(url될애)를 매개 변수로 받음
+): Promise<{
+  markdown: string;
+  post: Post; //나중에 이런 형태의 객체를 반환할것이다 제너릭  Promise지금은 없지만비동기로 나중의 값을 약속하는것 무조건 저구조로 반환
+}> => {
+  //notion.databases.query()데이터베이스에서 여러 페이지 검색하기
+  //await이 붙엇으니 같은 함수에서는 이거 끝날때가지 멈춤
+  const response = await notion.databases.query({
+    //이게 데이터 베이스라 잇기에 아래 쿼리문이 먹음
+    database_id: process.env.NOTION_DATABASE_ID!, //환경변수라서 오류를 띄움 그래서 !를 붙여서 null이나 undefined이 아니라고 알려줘야함
+
+    //Notion API의 쿼리 옵션 filter SQL로 치면 WHERE 절 검색조건
+    filter: {
+      and: [
+        {
+          //첫번째 조건
+          property: 'Slug',
+          rich_text: {
+            equals: slug,
+          }, //슬러그거 내 슬러그랑 일치
+        },
+        {
+          //두번재 조건 스테이터스가 퍼블리시 일것
+          property: 'Status',
+          select: {
+            equals: 'Published',
+          },
+        },
+      ],
+    },
+  });
+
+  //만약 일치하는게 없으면 찾을수 없다고 서버 에러 띄어줌 화면에
+  if (response.results.length === 0) {
+    throw new Error(`No post found for slug: ${slug}`);
+  }
+
+  //response.results[0]에 여러 객체들의 배열이 들어져잇고 (프로퍼티 아이디 등)
+  //저기서 타입이 여러가지일수잇으니  PageObjectResponse 타입이 온다하는것
+  const page = response.results[0] as PageObjectResponse;
+
+  // Markdown 변환
+  //이 id에 해당하는 노션 페이지 블록들을 마크다운 블록형태로 변환 api에 요청해야하기때문에 네트워크필요 그래서 await사용
+  const mdBlocks = await n2m.pageToMarkdown(page.id);
+
+  //그걸 마크블록형식으로 변환
+  const { parent } = n2m.toMarkdownString(mdBlocks);
+
+  // ====== MDX에서 import/export 에러 방지용 escape 처리 ======
+  // next-mdx-remote 및 MDX 컴파일러는 import/export 문을 코드 블록이 아닌 경우 에러를 발생시키기 때문에
+  // 여기서 임시로 다른 문자열로 바꿔준다.
+  const safeMarkdown = parent.replace(/import /g, '〈import〉 ').replace(/export /g, '〈export〉 ');
+  // ====== escape 끝 ======
+
+  return {
+    markdown: safeMarkdown, // escape 처리된 문자열을 반환함
+    post: getPostMetadata(page), //그래서 여러가지 페이지에서 여러 객체가 동시에 잇지만 그걸 필요한 부분만 반환해서 받음
+  };
+};
 
 //선택태그 최신순 불러오기 쿼리에 맞는것이 잇느면 post 형태로 리턴  만약 태그로 매개변수가 아니면 퍼블리쉬된 모든 글을 가져온다
 //tag? 매게변수가 잇을수도 없을수도잇다
-export const getPublishedPosts = async (tag?: string): Promise<NotionPost[]> => {
+export const getPublishedPosts = async (tag?: string): Promise<Post[]> => {
   const response = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID!,
     //
@@ -64,83 +175,53 @@ export const getPublishedPosts = async (tag?: string): Promise<NotionPost[]> => 
     ],
   });
 
-  // 노션에서 가져온 결과를 콘솔에 출력 (디버깅용)
-  console.log(response.results);
-
-  // 결과 중에서 'properties'를 가진 페이지 객체만 필터링
-  // 타입 가드(page is PageObjectResponse)를 써서 타입스크립트가 확실하게 인식할 수 있게 함
-  return response.results
-    .filter((page): page is PageObjectResponse => 'properties' in page)
-    .map((page) => {
-      const { properties } = page;
-
-      // 커버 이미지 URL을 가져오는 내부 함수
-      // cover.type에 따라 external(외부 URL)인지 file(노션 내부 파일)인지 구분함
-      const getCoverImage = (cover: PageObjectResponse['cover']) => {
-        if (!cover) return ''; // 커버가 없으면 빈 문자열 반환
-
-        switch (cover.type) {
-          case 'external':
-            return cover.external.url;
-          case 'file':
-            return cover.file.url;
-          default:
-            return '';
-        }
-      };
-
-      // 필요한 데이터만 꺼내서 우리가 정의한 NotionPost 형태로 반환
-      return {
-        id: page.id,
-        // title : 노션의 Title 프로퍼티는 배열 형태이므로 [0]으로 접근
-        title:
-          properties.Title.type === 'title' ? (properties.Title.title[0]?.plain_text ?? '') : '',
-        // description : 리치 텍스트 타입의 첫 번째 텍스트 추출
-        description:
-          properties.Description.type === 'rich_text'
-            ? (properties.Description.rich_text[0]?.plain_text ?? '')
-            : '',
-        // 커버 이미지 URL
-        coverImage: getCoverImage(page.cover),
-        // 태그 : multi_select 배열을 map()으로 이름만 추출
-        tags:
-          properties.Tags.type === 'multi_select'
-            ? properties.Tags.multi_select.map((tag) => tag.name)
-            : [],
-        // 작성자 : people 타입에서 첫 번째 사람의 이름 추출
-        author:
-          properties.Author.type === 'people'
-            ? ((properties.Author.people[0] as PersonUserObjectResponse)?.name ?? '')
-            : '',
-        // 날짜 : date 프로퍼티의 start 값만 가져옴
-        date: properties.Date.type === 'date' ? (properties.Date.date?.start ?? '') : '',
-        // 마지막 수정 시간 : 노션 시스템 필드
-        modifiedDate: page.last_edited_time,
-        // slug : rich_text 타입의 첫 번째 값 or page.id (fallback)
-        slug:
-          properties.Slug.type === 'rich_text'
-            ? (properties.Slug.rich_text[0]?.plain_text ?? page.id)
-            : page.id,
-      };
-    });
+  //노션에 방금 쿼리 조건에 맞는 것들을 리절트에 담아줌
+  //먼저 페이지인것만 필터함수로 걸러주고(필터가 아닌것이 잇을것을 방지) 타입을 명시해둿는데 타입가드로 한번더 확인하는 이유가 뭔데
+  return (
+    response.results
+      .filter((page): page is PageObjectResponse => 'properties' in page) // properties' in page페이지 타입이라고 선언 //커스텀 타입가드
+      //  타입스크립트 타입 명시를 햇으나 컴파일시점에는 아직 어떤값이 올지모르니   page is PageObjectResponse이건 함수의 반환타입 근데 진짜 이게 올지모르니 타입스크립트에 타입가드를 안해주면 오류남
+      //  타입가드 : 여러타입중 원하는 타입으로 걸러내는것
+      .map(getPostMetadata)
+  );
 };
 
+//그니까 이함수는 태그를객체 전체를 하나 만들고 다른것도 태그별 이름별로 정리해서 갯수를 붙여 반환하는테그
 export const getTags = async (): Promise<NotionTag[]> => {
-  //Promise<X> NotionTag[] 배열을 비동기로 반환한다는 뜻 저렇게 작성함으로 서 지금 당장은 타입이 없지만 나중에 받을거라 알려줌
-  const posts = await getPublishedPosts();
+  const posts = await getPublishedPosts(); //게시글 데이터를 다 불러옴
 
-  const tagSet = new Set<string>(); //이렇게 set으로 만들고 여기서 값을 넣음 중복된거잇으면 자동제거
+  // 모든 태그를 추출하고 각 태그의 출현 횟수를 계산
+  const tagCount = posts.reduce(
+    //acc 누적변수
+    (acc, post) => {
+      post.tags?.forEach((tag) => {
+        //리듀서 함수
+        acc[tag] = (acc[tag] || 0) + 1; //(acc[tag] || 0) + 1; (acc[tag] || 0)이게없으면 0이니까 처음에는 0으로 잇으면 1로 시작
+      });
+      return acc;
+    },
+    {} as Record<string, number> //{} 빈객체를 만들되 타입스크립트에게 키와 밸류의 타입을 알려줘야함 뭐가 올지 타입스크립트가 모름으로
+    // Record<키의타입, 값의타입> 타입스크립트에서 자주 사용하는 초기설정 as 이 타입으로 취급하라 는 TypeScript 단언 리듀스는 초기값을 설정함 acc의 초기값을 설정한것
+  );
 
-  posts.forEach((post) => {
-    post.tags?.forEach((tag) => tagSet.add(tag));
-  });
-
-  const tags: NotionTag[] = [...tagSet].map((name) => ({
+  //여기까지
+  // TagFilterItem 형식으로 변환 //({ … }) 는 “객체를 바로 반환
+  const tags: NotionTag[] = Object.entries(tagCount).map(([name, count]) => ({
+    //Object.entries(객체) 객체의 “키-값 쌍”을 [key, value] 형태의 배열로 바꿔줌
     id: name,
-    name, //단축속성명 키와값이 이름이 같으면 생략 가능
+    name,
+    count,
   }));
 
-  tags.unshift({ id: 'all', name: '전체' });
+  // "전체" 태그 추가 .unshift배열 맨 앞에 추가
+  tags.unshift({
+    id: 'all',
+    name: '전체',
+  });
 
-  return tags;
+  // 태그 이름 기준으로 정렬 ("전체" 태그는 항상 첫 번째에 위치하도록 제외) 그래서 일부러 나누어서 함
+  const [allTag, ...restTags] = tags;
+  const sortedTags = restTags.sort((a, b) => a.name.localeCompare(b.name));
+
+  return [allTag, ...sortedTags];
 };

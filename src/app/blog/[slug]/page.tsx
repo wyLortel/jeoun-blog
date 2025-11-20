@@ -1,112 +1,44 @@
 import { Badge } from '@/src/app/_components/ui/badge';
 import { Separator } from '@/src/app/_components/ui/separator';
-import { CalendarDays, Clock } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import Link from 'next/link';
 import { getPostBySlug } from '@/lib/notion';
 import { formatDate } from '@/lib/date';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 
-interface TableOfContentsItem {
-  id: string;
-  title: string;
-  items?: TableOfContentsItem[];
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
+
+import { compile } from '@mdx-js/mdx';
+import withSlugs from 'rehype-slug';
+import withToc from '@stefanprobst/rehype-extract-toc';
+import withTocExport from '@stefanprobst/rehype-extract-toc/mdx';
+
+interface TocEntry {
+  value: string;
+  depth: number;
+  id?: string;
+  children?: Array<TocEntry>;
 }
 
-const mockTableOfContents: TableOfContentsItem[] = [
-  {
-    id: 'intro',
-    title: '소개',
-    items: [],
-  },
-  {
-    id: 'getting-started',
-    title: '시작하기',
-    items: [
-      {
-        id: 'prerequisites',
-        title: '사전 준비사항',
-        items: [
-          {
-            id: 'node-installation',
-            title: 'Node.js 설치',
-          },
-          {
-            id: 'npm-setup',
-            title: 'NPM 설정',
-          },
-        ],
-      },
-      {
-        id: 'project-setup',
-        title: '프로젝트 설정',
-        items: [
-          {
-            id: 'create-project',
-            title: '프로젝트 생성',
-          },
-          {
-            id: 'folder-structure',
-            title: '폴더 구조',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'shadcn-ui-setup',
-    title: 'Shadcn UI 설정하기',
-    items: [
-      {
-        id: 'installation',
-        title: '설치 방법',
-        items: [
-          {
-            id: 'cli-installation',
-            title: 'CLI 도구 설치',
-          },
-          {
-            id: 'component-setup',
-            title: '컴포넌트 설정',
-          },
-        ],
-      },
-      {
-        id: 'configuration',
-        title: '환경 설정',
-        items: [
-          {
-            id: 'theme-setup',
-            title: '테마 설정',
-          },
-          {
-            id: 'typography',
-            title: '타이포그래피',
-          },
-        ],
-      },
-    ],
-  },
-];
+type Toc = Array<TocEntry>;
 
-// hover:text-foreground 자동으로 색이 바귐 다크모드 일땐 흰 라이트는 검정
-//text-muted-foreground 위에 기본 색보다는 밝거나 흐릿한 보조 텍스트 색상 부제목이나 상세 정보 절 강조되는부분에 사용
-function TableOfContentsLink({ item }: { item: TableOfContentsItem }) {
+// text-muted-foreground 밝은 보조 텍스트 색상
+function TableOfContentsLink({ item }: { item: TocEntry }) {
   return (
     <div className="py-1">
       <Link
         href={`#${item.id}`}
         className="text-muted-foreground hover:text-foreground block text-sm transition-colors"
       >
-        {item.title}
+        {item.value}
       </Link>
 
-      {/* 요소가 안에 있으면 재귀 호출을 통해 하위 목차를 렌더링 */}
-      {item.items && item.items.length > 0 && (
+      {item.children && item.children.length > 0 && (
         <div className="border-border/70 mt-1 ml-4 space-y-1 border-l pl-3">
-          {item.items.map((subItem) => (
-            //  key는 리액트 엔진이 Virtual DOM을 비교할 때
-            // 항목이 바뀌었는지 구별하기 위한 식별자
-            // key가 같으면 재사용, 다르면 새로 렌더링
+          {item.children.map((subItem) => (
             <TableOfContentsLink key={subItem.id} item={subItem} />
           ))}
         </div>
@@ -118,8 +50,18 @@ function TableOfContentsLink({ item }: { item: TableOfContentsItem }) {
 export default async function BlogPost({ params }: { params: { slug: string } }) {
   const { slug } = params;
 
-  // 여기서 post 데이터를 가져와야 아래에서 사용할 수 있음
+  // 포스트와 마크다운 가져오기
   const { post, markdown } = await getPostBySlug(slug);
+
+  // TOC 추출용 컴파일 (slug 부여 + sanitize + toc 추출)
+  const { data } = await compile(markdown, {
+    rehypePlugins: [
+      withSlugs, // 제목에 id 부여
+      rehypeSanitize, // HTML 필터링
+      withToc, // heading 구조 분석
+      withTocExport, // mdx로 export
+    ],
+  });
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -130,35 +72,44 @@ export default async function BlogPost({ params }: { params: { slug: string } })
             <h1 className="text-4xl font-bold">{post.title}</h1>
           </div>
 
-          {/* 메타정보 */}
+          {/* 메타 정보 */}
           <div className="text-muted-foreground text-l mt-5 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <CalendarDays className=",w-4 h-4" />
                 <span>{formatDate(post.date)}</span>
               </div>
+
               <div className="flex gap-2">
                 {post.tags?.map((tag) => (
                   <Badge key={tag}>{tag}</Badge>
                 ))}
               </div>
             </div>
-            {/* <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>5분 읽기</span>
-            </div> */}
           </div>
 
           <Separator className="my-8" />
 
           {/* 블로그 본문 */}
-          {/* prose 아까 설치한 테일윈드 타이포그래피가능 prose라는 클래스를 붙이면 문서스타일로 요소를 통일시켜서 적용시켜줌 h1 h2같은걸 적절히 */}
           <div className="prose prose-neutral prose-sm dark:prose-invert prose-headings:mt-10 prose-h1:mb-6 prose-h2:mt-12 prose-h2:mb-4 max-w-none">
-            <MDXRemote source={markdown} />
+            <MDXRemote
+              source={markdown}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm],
+                  rehypePlugins: [
+                    rehypeSlug, // ← 실제 렌더링되는 heading에 id 부여
+                    rehypeSanitize, // HTML 정화
+                    rehypePrettyCode, // 코드 하이라이트
+                  ],
+                },
+              }}
+            />
           </div>
+
           <Separator className="my-16" />
 
-          {/* 이전 다음 포스트 네비게이션 */}
+          {/* 이전/다음 포스트 네비게이션 */}
           <nav className="flex flex-col gap-10">
             <Link href="/blog/previous-post">
               <span>다음 글</span>
@@ -183,37 +134,19 @@ export default async function BlogPost({ params }: { params: { slug: string } })
             </Link>
           </nav>
         </section>
+
         {/* 목차 */}
-        <aside className="relative">
-          {/* 헤더 높이 고려해서 top 설정 */}
-          <div className="top- sticky top-[var(--header-hight)]">
-            <div className="space-y-4 rounded-lg p-6 backdrop-blur-sm">
-              <h3 className="text-lg font-semibold">목차</h3>
-              <nav className="space-y-3 text-sm">
-                {mockTableOfContents.map((item) => (
-                  <TableOfContentsLink key={item.id} item={item} />
-                ))}
-              </nav>
-            </div>
+        <aside className="sticky top-24 self-start">
+          <div className="space-y-4 rounded-lg p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold">목차</h3>
+            <nav className="max-h-[80vh] space-y-3 overflow-y-auto text-sm">
+              {data?.toc?.map((item) => (
+                <TableOfContentsLink key={item.id} item={item} />
+              ))}
+            </nav>
           </div>
         </aside>
       </div>
     </div>
   );
 }
-
-/* 
-//객체 타입을 정의하는 문법 interface
-//동적 라우트페이지는 자동으로  params는 url 변수를 props로 넘겨줌 /blog/nextjs/intro이면  slug: ['nextjs', 'intro'] } 이런식
-//Promise<>로 감싸면 비동기 함수가 나중에 { slug: string[] } 객체를 리턴한다 라는뜻 Promise는 미래에 받을 값이기에
-interface BlogPostProps {
-  params: Promise<{
-    slug: string[];
-  }>;
-}
-
-//14까지는 next가 동기로 렌더링을 햇는데 15부터는 부터는 비동기 렌더링으로 바뀌어서 준비 될대마다 부분적 렌더링하므로 비동기로 받아주어야함
-export default async function BlogPost({ params }: BlogPostProps) {
-  const slug = (await params).slug;
-  return <div>BlogPost</div>;
-} */

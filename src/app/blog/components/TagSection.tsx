@@ -28,7 +28,7 @@ export default function TagSection({ tags }: TagSectionProps) {
                 className={
                   isSelected
                     ? 'bg-primary border-primary border px-4 py-1 text-white transition-colors duration-200'
-                    : 'text-foreground border-border border bg-white px-4 py-1 transition-colors duration-200'
+                    : 'text-foreground border-border hover:bg-primary border bg-white px-4 py-1 transition-colors duration-200 hover:text-white'
                 }
               >
                 {tag.name}

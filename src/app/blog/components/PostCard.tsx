@@ -5,7 +5,7 @@ import { formatDate } from '@/lib/date';
 import { Badge } from '@/src/app/_components/ui/badge';
 import { Card, CardContent } from '@/src/app/_components/ui/card';
 import { Post } from '@/types/blog';
-import { Calendar, User } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import Image from 'next/image';
 
 interface PostCardProps {

@@ -3,7 +3,6 @@ import { fileURLToPath } from 'url';
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import globals from 'globals';
-import someConfig from 'some-other-config-you-use';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +15,6 @@ const compat = new FlatCompat({
 const eslintConfig = [
   js.configs.recommended,
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  someConfig,
   eslintConfigPrettier,
   {
     languageOptions: {
@@ -28,6 +26,8 @@ const eslintConfig = [
     rules: {
       'no-unused-vars': 'warn',
       'no-console': 'warn',
+      'react/no-unescaped-entities': 'off',
+      '@typescript-eslint/triple-slash-reference': 'off',
     },
   },
 ];

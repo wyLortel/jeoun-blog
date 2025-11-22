@@ -1,8 +1,20 @@
-export default function page() {
+import { getPublishedPosts } from '@/lib/notion';
+import type { Post } from '@/types/blog';
+import HeroCarousel from './HeroCarousel';
+
+export default async function page() {
+  const posts: Post[] = await getPublishedPosts();
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-8">
-        <h2 className="text-3xl font-bold tracking-tight">홈</h2>
+    <div className="container mx-auto px-10 py-8">
+      <div className="space-y-20">
+        <HeroCarousel posts={posts} />
+        <p className="text-center text-3xl">
+          "Always 幸せはここにある"
+          <br />
+          <span className="text-sm">"平井大－SLOW & EASY"</span>
+        </p>
+        <p className="text-center"></p>
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypePrettyCode from 'rehype-pretty-code';
-import rehypeSlug from 'rehype-slug';
 
 import { compile } from '@mdx-js/mdx';
 import withSlugs from 'rehype-slug';
@@ -22,8 +21,6 @@ interface TocEntry {
   id?: string;
   children?: Array<TocEntry>;
 }
-
-type Toc = Array<TocEntry>;
 
 // text-muted-foreground 밝은 보조 텍스트 색상
 function TableOfContentsLink({ item }: { item: TocEntry }) {
@@ -47,11 +44,12 @@ function TableOfContentsLink({ item }: { item: TocEntry }) {
   );
 }
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
-  // 포스트와 마크다운 가져오기
   const { post, markdown } = await getPostBySlug(slug);
+
+  // 이하 동일
 
   // TOC 추출용 컴파일 (slug 부여 + sanitize + toc 추출)
   const { data } = await compile(markdown, {
@@ -98,7 +96,7 @@ export default async function BlogPost({ params }: { params: { slug: string } })
                 mdxOptions: {
                   remarkPlugins: [remarkGfm],
                   rehypePlugins: [
-                    rehypeSlug, // ← 실제 렌더링되는 heading에 id 부여
+                    withSlugs, // ← 실제 렌더링되는 heading에 id 부여
                     rehypeSanitize, // HTML 정화
                     rehypePrettyCode, // 코드 하이라이트
                   ],

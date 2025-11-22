@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'; //React에서 렌더링 가능한 모든 노드(ReactNode) (JSX, 문자열, 숫자, 배열 등)TypeScript용 타입 정의로만 쓰이는듯
 //lucide-react라이브러리를 사용하면 아이콘 사용할수잇음
-import { User, Briefcase, Coffee, Github } from 'lucide-react';
+import { User, Briefcase, Github } from 'lucide-react';
 import Link from 'next/link'; // Next.js 라우팅용 Link 컴포넌트 추가
 
 interface AboutLayoutProps {

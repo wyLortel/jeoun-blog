@@ -15,7 +15,7 @@ export default function TagSection({ tags }: TagSectionProps) {
   const selectedTag = searchParams.get('tag');
 
   return (
-    <div>
+    <div className="sticky top-20">
       <h3 className="mb-3 text-xl font-bold">Tag</h3>
 
       <div className="flex flex-wrap gap-3">

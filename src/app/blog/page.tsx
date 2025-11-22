@@ -1,6 +1,5 @@
 import { PostCard } from '@/src/app/blog/components/PostCard';
 import Link from 'next/link';
-import PopularPosts from './components/PopularPosts';
 import TagSection from './components/TagSection';
 import Image from 'next/image';
 import { getPublishedPosts, getTags } from '../../../lib/notion';
@@ -47,7 +46,6 @@ export default async function Home({ searchParams }: HomeProps) {
 
         {/* 사이드바 */}
         <aside className="ml-2 space-y-10">
-          <PopularPosts />
           <TagSection tags={tags} />
         </aside>
       </div>

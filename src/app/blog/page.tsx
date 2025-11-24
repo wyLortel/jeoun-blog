@@ -30,15 +30,16 @@ export default async function Home({ searchParams }: HomeProps) {
               alt="Blog Header"
               fill
               className="object-cover"
+              sizes="100vw"
               priority
             />
           </div>
 
           {/* 게시글 목록 */}
           <div className="space-y-6">
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <Link href={`/blog/${post.slug}`} key={post.id} className="block">
-                <PostCard post={post} />
+                <PostCard post={post} isFirst={index === 0} />
               </Link>
             ))}
           </div>

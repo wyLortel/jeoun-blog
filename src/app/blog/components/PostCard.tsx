@@ -10,9 +10,10 @@ import Image from 'next/image';
 
 interface PostCardProps {
   post: Post;
+  isFirst?: boolean;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, isFirst = false }: PostCardProps) {
   return (
     // group을 선언하고 부모에게 hover같은 이벤트 적용시 자식에게 그룹으로 지정된것들이 적용 트리거 같은셈
     <Card className="group bg-card/50 border-border/40 hover:border-primary/20 flex flex-col items-stretch overflow-hidden rounded-2xl border backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-md md:flex-row md:gap-6">
@@ -64,6 +65,10 @@ export function PostCard({ post }: PostCardProps) {
               src={post.coverImage}
               alt={post.title}
               fill //next img 전용속성 으로 제공 이미지를 부모요소에 맞게 채움  position: absolute가 자동적용됨 그래서 relative가 필요
+              priority={isFirst}
+              sizes="(max-width: 768px) 100vw,
+                      (max-width: 1200px) 50vw,
+                      33vw"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>

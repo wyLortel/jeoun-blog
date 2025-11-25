@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { ThemeToggle } from '../theme/ThemeToggle';
 
 export default function Header() {
   return (
@@ -20,18 +21,33 @@ export default function Header() {
           <Link href="/about" className="hover:text-primary font-medium">
             About me
           </Link>
-          <Link
-            href="https://github.com/wyLortel"
-            className="hover:text-primary flex items-center gap-2 hover:opacity-80"
-          >
-            <Image
-              src="/github-mark-white.png"
-              alt="깃허브 이미지"
-              width={24}
-              height={24}
-              className="invert"
-            />
-          </Link>
+          <div className="flex items-center justify-end gap-6">
+            <ThemeToggle />
+            <Link
+              href="https://github.com/wyLortel"
+              className="hover:text-primary flex items-center gap-2 hover:opacity-80"
+            >
+              <div className="relative">
+                {/* 라이트 모드 이미지 */}
+                <Image
+                  src="/github.jpg"
+                  alt="GitHub"
+                  width={28}
+                  height={28}
+                  className="block dark:hidden"
+                />
+
+                {/* 다크 모드 이미지 */}
+                <Image
+                  src="/github-mark-white.png"
+                  alt="GitHub Dark"
+                  width={24}
+                  height={24}
+                  className="hidden dark:block"
+                />
+              </div>
+            </Link>
+          </div>
         </nav>
       </div>
     </header>

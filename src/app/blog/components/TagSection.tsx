@@ -27,8 +27,8 @@ export default function TagSection({ tags }: TagSectionProps) {
               <Badge
                 className={
                   isSelected
-                    ? 'bg-primary border-primary border px-4 py-1 text-white transition-colors duration-200'
-                    : 'text-foreground border-border hover:bg-primary border bg-white px-4 py-1 transition-colors duration-200 hover:text-white'
+                    ? `bg-primary border-primary border px-4 py-1 text-white transition-colors duration-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white`
+                    : `text-foreground border-border hover:bg-primary border bg-white px-4 py-1 transition-colors duration-200 hover:text-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-slate-700`
                 }
               >
                 {tag.name}

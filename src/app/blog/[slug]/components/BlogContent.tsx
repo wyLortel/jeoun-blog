@@ -1,30 +1,107 @@
-//기본적으로 mdx를 nextjs는 렌더하지못함 문자열 기반 markdown을 안전하게 React Component로 바꿔주는 라이브러리.
-import { MDXRemote } from 'next-mdx-remote/rsc';
+// BlogContent.tsx
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-//체크 박스 표 등을 지원하는 마크다운 확장 마크다운에서 gfm문법을 기본적으로 지원하지않음
-import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-//Markdown의 제목 h1 h2같은거 그것에 자동으로 id를 붙여주는 플러그인 노션의 제목이 id로 작용 같은제목이면 숫자를 붙여서 구별한다함
-import rehypeSlugs from 'rehype-slug';
+interface BlogContentProps {
+  markdown: string;
+}
 
-import rehypePrettyCode from 'rehype-pretty-code';
+export default function BlogContent({ markdown }: BlogContentProps) {
+  // -----------------------------------------
+  //   ID 중복 방지용 map
+  // -----------------------------------------
+  const idMap: Record<string, number> = {};
 
-//안에잇는 위험한테그 제거 예를들면 <script> 태그를 넣으면 브라우저에서 그대로 실행
-import rehypeSanitize from 'rehype-sanitize';
+  function makeUniqueId(text: string) {
+    const base = text.replace(/\s+/g, "-").trim();
 
-//마크다운 사용패턴
-export default function BlogContent({ markdown }: { markdown: string }) {
+    if (!idMap[base]) {
+      idMap[base] = 1;
+      return base;
+    }
+
+    const id = `${base}-${idMap[base]}`;
+    idMap[base] += 1;
+    return id;
+  }
+
   return (
-    <article className="prose prose-neutral prose-sm dark:prose-invert mt-10 max-w-none">
-      <MDXRemote
-        source={markdown} //MDXRemote에 렌더할 Markdown 문자열 전달.
-        options={{
-          mdxOptions: {
-            remarkPlugins: [remarkGfm],
-            rehypePlugins: [rehypeSlugs, rehypeSanitize, rehypePrettyCode],
+    <article className="prose dark:prose-invert max-w-none">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        skipHtml={true}
+        components={{
+          /* ---------------------------
+             H1~H3 자동 ID + 중복 해결
+          ---------------------------- */
+          h1({ children, ...props }) {
+            const text = String(children);
+            const id = makeUniqueId(text);
+            return (
+              <h1 id={id} {...props}>
+                {children}
+              </h1>
+            );
+          },
+
+          h2({ children, ...props }) {
+            const text = String(children);
+            const id = makeUniqueId(text);
+            return (
+              <h2 id={id} {...props}>
+                {children}
+              </h2>
+            );
+          },
+
+          h3({ children, ...props }) {
+            const text = String(children);
+            const id = makeUniqueId(text);
+            return (
+              <h3 id={id} {...props}>
+                {children}
+              </h3>
+            );
+          },
+
+          /* ---------------------------
+             코드 렌더러
+          ---------------------------- */
+          code({ children, className, ...rest }) {
+            const isInline = !className;
+            const match = /language-(\w+)/.exec(className || "");
+
+            // Fenced code block
+            if (!isInline && match) {
+              return (
+                <SyntaxHighlighter
+                  style={oneDark}
+                  language={match[1]}
+                  PreTag="div"
+                >
+                  {String(children).replace(/\n$/, "")}
+                </SyntaxHighlighter>
+              );
+            }
+
+            // Inline code
+            return (
+              <code
+                className="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-700"
+                {...rest}
+              >
+                {children}
+              </code>
+            );
           },
         }}
-      />
+      >
+        {markdown}
+      </ReactMarkdown>
     </article>
   );
 }

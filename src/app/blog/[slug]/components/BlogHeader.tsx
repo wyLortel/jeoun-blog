@@ -10,7 +10,7 @@ interface BlogHeaderProps {
 
 export default function BlogHeader({ post }: BlogHeaderProps) {
   return (
-    <header className="mt-10 space-y-6">
+    <header className="mt-10 space-y-6 mb-25">
       <h1 className="text-4xl font-bold">{post.title}</h1>
 
       <div className="text-muted-foreground flex items-center gap-4 text-sm">

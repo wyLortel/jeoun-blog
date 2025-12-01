@@ -62,7 +62,11 @@ export function PostCard({ post, isFirst = false }: PostCardProps) {
           {/* 텍스트와 동일 패딩 */}
           <div className="relative h-48 overflow-hidden rounded-2xl md:h-full">
             <Image
-              src={post.coverImage}
+              src={
+                post.coverImage && post.coverImage.trim() !== ''
+                  ? post.coverImage
+                  : '/default-cover.png'
+              }
               alt={post.title}
               fill //next img 전용속성 으로 제공 이미지를 부모요소에 맞게 채움  position: absolute가 자동적용됨 그래서 relative가 필요
               priority={isFirst}

@@ -2,7 +2,7 @@ import { getPublishedPosts } from '@/lib/notion';
 import type { Post } from '@/types/blog';
 import HeroCarousel from './HeroCarousel';
 
-export default async function page() {
+export default async function Page() {
   const posts: Post[] = await getPublishedPosts();
 
   return (

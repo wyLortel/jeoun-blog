@@ -12,7 +12,7 @@ export default function AboutHeader() {
       <div className="space-y-6">
         <span className="text-primary text-lg font-medium tracking-tight">Software Developer</span>
         <h2 className="text-4xl font-extrabold tracking-tight md:text-5xl">Jeoung Wooyoung</h2>
-        <p className="text-base leading-relaxed text-gray-700 md:text-lg">
+        <p className="text-base leading-relaxed text-gray-700 md:text-lg dark:text-white">
           私は、チーム全体を支えるエンジニアになりたいです。
           技術だけでなく、人との信頼や調和を大切にし、
           周りが安心して働ける環境を作りたいと思っています。

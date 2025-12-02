@@ -89,7 +89,7 @@ function extractToc(markdown: string) {
    🔥 정적 파라미터 생성
 ------------------------------ */
 export async function generateStaticParams() {
-  const posts = await getPublishedPosts();
+  const { posts } = await getPublishedPosts({});
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -106,7 +106,7 @@ export default async function Page({
   const { slug } = await params;
 
   const { post, markdown } = await getPostBySlug(slug);
-  const allPosts = await getPublishedPosts();
+  const { posts: allPosts } = await getPublishedPosts({});
 
   const index = allPosts.findIndex((p) => p.slug === slug);
   const newerPost = allPosts[index - 1] ?? null;

@@ -1,33 +1,42 @@
-import Link from 'next/link';
+'use client';
+
 import { TocEntry } from '@/src/app/blog/[slug]/types';
 
-interface TableOfContentsLinkProps {
+interface Props {
   item: TocEntry;
   activeId: string | null;
-  onClick?: () => void;          // TOC 클릭 핸들러 추가
+  onClick?: () => void;
 }
 
-export default function TableOfContentsLink({ item, activeId, onClick }: TableOfContentsLinkProps) {
-  const isActive = item.id === activeId;
+export default function TableOfContentsLink({ item, activeId, onClick }: Props) {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
+    if (onClick) onClick(); // lock 활성화
+
+    const target = document.getElementById(item.id!);
+    if (!target) return;
+
+    window.history.replaceState(null, '', `#${item.id}`);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
-    <div className="py-1">
-      <Link
+    <div className="ml-2">
+      <a
         href={`#${item.id}`}
-        onClick={onClick}          // 클릭 시 observer 잠금
-        className={
-          isActive ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
-        }
+        onClick={handleClick}
+        className={activeId === item.id ? 'text-blue-500 font-semibold' : 'text-gray-700'}
       >
         {item.value}
-      </Link>
+      </a>
 
       {item.children && item.children.length > 0 && (
-        <div className="ml-4 border-l pl-3">
-          {item.children.map((sub) => (
+        <div className="ml-4 mt-2 space-y-1">
+          {item.children.map((child) => (
             <TableOfContentsLink
-              key={sub.id}
-              item={sub}
+              key={child.id}
+              item={child}
               activeId={activeId}
               onClick={onClick}
             />
@@ -37,3 +46,4 @@ export default function TableOfContentsLink({ item, activeId, onClick }: TableOf
     </div>
   );
 }
+

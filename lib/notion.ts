@@ -113,9 +113,28 @@ export const getPostBySlug = cache(
   }
 );
 
+interface GetPublishedPostsParams {
+  tag?: string;
+  sort?: string;
+  pageSize?: number;
+  startCursor?: string;
+}
+
+export interface GetPublishedPostsResponse {
+  posts: Post[];
+  hasMore: boolean;
+  nextCursor: string | null;
+}
+
+
+
 
 // 게시글 전체 목록 조회 (태그 필터 포함)
-export const getPublishedPosts = async (tag?: string): Promise<Post[]> => {
+export const getPublishedPosts = async ({
+  tag,
+  pageSize = 100,
+  startCursor,
+}: GetPublishedPostsParams = {}): Promise<GetPublishedPostsResponse> => {
   const response = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID!,
     filter: {
@@ -127,19 +146,26 @@ export const getPublishedPosts = async (tag?: string): Promise<Post[]> => {
       ],
     },
     sorts: [{ property: 'Date', direction: 'descending' }],
+    page_size: pageSize,
+    start_cursor: startCursor,
   });
 
-  return (
-    response.results
-      .filter((page): page is PageObjectResponse => 'properties' in page)
-      .map(getPostMetadata)
-  );
+  const posts = response.results
+    .filter((page): page is PageObjectResponse => 'properties' in page)
+    .map(getPostMetadata);
+
+  return {
+    posts,
+    hasMore: response.has_more,
+    nextCursor: response.next_cursor,
+  };
 };
+
 
 
 // 태그 목록 생성
 export const getTags = async (): Promise<NotionTag[]> => {
-  const posts = await getPublishedPosts();
+   const { posts } = await getPublishedPosts({ pageSize: 100 });
 
   const tagCount = posts.reduce(
     (acc, post) => {

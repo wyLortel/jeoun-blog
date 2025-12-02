@@ -26,7 +26,7 @@ export default function SkillSection() {
         <h3 className="text-primary text-2xl font-bold">Programming</h3>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3">
           {skills.map((skill) => (
-            <Badge key={skill} className="text-l px-5 py-3 font-semibold">
+            <Badge key={skill} className="text-l px-5 py-3 font-semibold dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-slate-700">
               {skill}
             </Badge>
           ))}

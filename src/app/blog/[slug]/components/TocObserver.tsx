@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 interface TocObserverProps {
   setActiveId: (id: string | null) => void;
@@ -8,17 +8,13 @@ interface TocObserverProps {
 }
 
 export default function TocObserver({ setActiveId, lock }: TocObserverProps) {
-  // lock 값을 ref로 관리 → dependency array 변경 방지
-  const lockRef = useRef(lock);
-  lockRef.current = lock;
-
   useEffect(() => {
-    const headings = document.querySelectorAll('h1,h2,h3');
+    if (lock) return; // 클릭 잠금 상태면 observer 중단
+
+    const headings = document.querySelectorAll('h1, h2, h3');
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (lockRef.current) return; // ref 기반 → dependency 변화 없음
-
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort(
@@ -40,7 +36,7 @@ export default function TocObserver({ setActiveId, lock }: TocObserverProps) {
     headings.forEach((h) => observer.observe(h));
 
     return () => observer.disconnect();
-  }, [setActiveId]); // ← 배열 크기 절대 변하지 않음
+  }, [setActiveId, lock]);
 
   return null;
 }

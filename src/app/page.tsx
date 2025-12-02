@@ -1,9 +1,8 @@
 import { getPublishedPosts } from '@/lib/notion';
-import type { Post } from '@/types/blog';
 import HeroCarousel from './HeroCarousel';
 
 export default async function Page() {
-  const posts: Post[] = await getPublishedPosts();
+   const { posts } = await getPublishedPosts({});
 
   return (
     <div className="container mx-auto px-10 py-8">

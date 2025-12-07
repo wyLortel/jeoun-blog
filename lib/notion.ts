@@ -129,7 +129,7 @@ export interface GetPublishedPostsResponse {
 
 
 
-// 게시글 전체 목록 조회 (태그 필터 포함)
+// 게시글 전체 목록 조회 (태그 필터 포함) 원래 노션 api 구조로 페이지네이션을 구현할려했으나 속도문제로 수정
 export const getPublishedPosts = async ({
   tag,
   pageSize = 100,

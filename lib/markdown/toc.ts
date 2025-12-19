@@ -5,7 +5,7 @@ export interface TocEntry {
   children: TocEntry[];
 }
 
-// Markdown에서 TOC 정보 추출
+// Markdown에서 TOC 정보 추출 (mdk 에서 문제가 많이나와서)
 export function extractToc(markdown: string): TocEntry[] {
   const lines = markdown.split("\n");
 

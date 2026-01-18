@@ -5,7 +5,7 @@ export default async function Page() {
    const { posts } = await getPublishedPosts({});
 
   return (
-    <div className="container mx-auto px-10 py-8">
+    <div className="container mx-auto px-4 md:px-10 py-8">
       <div className="space-y-20">
         <HeroCarousel posts={posts} />
         <p className="text-center text-3xl">

@@ -86,7 +86,7 @@ function extractToc(markdown: string) {
 
 
 /* -----------------------------
-   🔥 정적 파라미터 생성
+    정적 파라미터 생성
 ------------------------------ */
 export async function generateStaticParams() {
   const { posts } = await getPublishedPosts({});
@@ -113,14 +113,15 @@ export default async function Page({
   const olderPost = allPosts[index + 1] ?? null;
 
   return (
-    <div className="container mx-auto grid grid-cols-[80%_20%] gap-8">
+    <div className="container mx-auto grid grid-cols-1  md:grid-cols-[80%_20%] gap-8">
       <div>
         <BlogHeader post={post} />
         <BlogContent markdown={markdown} />
         <BlogNavigation newerPost={newerPost} olderPost={olderPost} />
       </div>
-
+      <div className="hidden md:block">
       <TocSection toc={extractToc(markdown)} />
+      </div>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export function PostCard({ post, isFirst = false }: PostCardProps) {
     // group을 선언하고 부모에게 hover같은 이벤트 적용시 자식에게 그룹으로 지정된것들이 적용 트리거 같은셈
     <Card className="group bg-card/50 border-border/40 hover:border-primary/20 flex flex-col items-stretch overflow-hidden rounded-2xl border backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-md md:flex-row md:gap-6">
       {/* 왼쪽: 텍스트 */}
-      <CardContent className="flex flex-1 flex-col justify-between p-6">
+      <CardContent className="pb-0 flex flex-1 flex-col justify-between md:p-6">
         <div>
           <h2 className="group-hover:text-primary mb-2 text-xl font-bold transition-colors">
             {post.title}

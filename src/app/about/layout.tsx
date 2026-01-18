@@ -16,30 +16,31 @@ const menuItems = [
 export default function AboutLayout({ children }: AboutLayoutProps) {
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex gap-8">
-        {/* 사이드바 */}
-        {/* shrink-0" 해당 요소가 절대 줄어들지 않게함 */}
-        <aside className="w-64 shrink-0">
-          <nav className="bg-card sticky top-8 space-y-1 rounded-lg border p-4">
+      <div className="flex flex-col md:flex-row gap-8">
+
+        <aside className="w-full md:w-64 shrink-0">
+          {/* md:sticky: 데스크탑에서만 스크롤을 따라오게 설정 */}
+          <nav className="bg-card md:sticky md:top-8 space-y-1 rounded-lg border p-4">
             {menuItems.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors" // ✅ gap2 → gap-2 수정
+                className="text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-md px-3 py-2 transition-colors"
                 {...(item.external && {
-                  //자바스크립트는 A가 falsy면 A를, truthy면 B를 반환하는 연산으로 &&을 사용 ...을 사용해 트루면 뒤에잇는것들이 실행되니 들어갈수잇고 아니면 false므로 아무것도 props로 반환안함
                   target: '_blank',
-                  rel: 'noopener noreferrer', //새탭에서 원래 창 접근 차단
+                  rel: 'noopener noreferrer',
                 })}
               >
-                <item.icon className="h-4 w-4" />
-                <span className="text-xl">{item.label}</span>
+                <item.icon className="h-5 w-5" />
+                <span className="text-lg font-medium md:text-xl">{item.label}</span>
               </Link>
             ))}
           </nav>
         </aside>
 
-        <main className="flex-1">{children}</main>
+        {/* 본문 콘텐츠 */}
+        {/* w-full: 모바일에서 짤리지 않게 너비 보정 */}
+        <main className="flex-1 w-full">{children}</main>
       </div>
     </div>
   );

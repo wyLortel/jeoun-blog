@@ -35,9 +35,9 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-[75%_25%] gap-6">
-        <div className="space-y-6">
-          <div className="relative h-40 w-full overflow-hidden rounded-3xl">
+      <div className="flex flex-col md:grid md:grid-cols-[75%_25%] gap-6">
+        <div className="order-2 md:order-1 space-y-6">
+          <div className="hidden md:block relative h-40 w-full overflow-hidden rounded-3xl">
             <Image
               src="/blogHeader.jpeg"
               alt="Blog Header"
@@ -63,7 +63,7 @@ export default async function Home({ searchParams }: HomeProps) {
           />
         </div>
 
-        <aside className="ml-2 space-y-10">
+        <aside className="order-1 md:order-2 space-y-10 md:ml-2">
           <TagSection tags={tags} />
         </aside>
       </div>

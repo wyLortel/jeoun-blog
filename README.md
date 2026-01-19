@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Notion CMS 기반 Next.js 블로그
 
-## Getting Started
+## 🛠 기술 스택
+- Next.js
+- Notion (CMS)
+- Notion API
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ❓ 만든 이유
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+노션은 글 쓰기가 정말 편하다.  
+정리도 쉽고, 자동 저장도 되고, 글 쓰는 데 스트레스가 없다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+하지만 기존 블로그 서비스들은 문제가 있었다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- UI가 불편함
+- 사용법을 익히기 귀찮음
+- 내가 원하는 디자인으로 커스터마이징이 안 됨
 
-## Learn More
+그래서 **글은 노션에서 편하게 쓰고**,  
+**보여주는 건 내가 원하는 디자인의 블로그로 만들기 위해**  
+이 프로젝트를 만들었다.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📌 핵심 컨셉
+- 글 작성: Notion
+- 렌더링: Next.js
+- 방문자: 읽기 전용 블로그 UI
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<img width="782" height="601" alt="스크린샷 2026-01-19 오전 11 17 35" src="https://github.com/user-attachments/assets/9834ce36-37f1-45ac-a8f1-ff841f08d5c3" />
+<img width="837" height="155" alt="스크린샷 2026-01-19 오전 11 13 30" src="https://github.com/user-attachments/assets/b3be8e19-25a5-4bf6-8baf-4c6e1e2b8e8e" />

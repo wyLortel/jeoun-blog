@@ -31,3 +31,7 @@
 
 <img width="782" height="601" alt="스크린샷 2026-01-19 오전 11 17 35" src="https://github.com/user-attachments/assets/9834ce36-37f1-45ac-a8f1-ff841f08d5c3" />
 <img width="837" height="155" alt="스크린샷 2026-01-19 오전 11 13 30" src="https://github.com/user-attachments/assets/b3be8e19-25a5-4bf6-8baf-4c6e1e2b8e8e" />
+
+초기 디자인
+<img width="1440" height="2110" alt="Desktop - 2" src="https://github.com/user-attachments/assets/8fe00f49-17eb-43b5-a38b-0d6fa15b9dff" />
+<img width="1440" height="1870" alt="Desktop - 4" src="https://github.com/user-attachments/assets/0c64725a-f4f4-45fe-8cf9-89a9191f5615" />

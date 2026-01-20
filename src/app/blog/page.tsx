@@ -5,39 +5,38 @@ import Image from 'next/image';
 import { getPublishedPosts, getTags } from '../../../lib/notion';
 import PaginationUI from './components/PaginationUI';
 
+export const revalidate = 60;
 
-// Next.js 15 searchParams는 Promise
 interface HomeProps {
   searchParams: Promise<{ tag?: string; page?: string }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
   const { tag, page } = await searchParams;
-  const selectedTag = tag || '전체';
-  const currentPage = Number(page) > 0 ? Number(page) : 1;
+
+  const selectedTag = tag ?? '전체';
+  const currentPage = Math.max(Number(page) || 1, 1);
   const pageSize = 10;
 
-  const { posts: allPosts } = await getPublishedPosts({});
-  const tags = await getTags();
+  // ✅ 서버 캐시 적용된 호출
+  const [{ posts: allPosts }, tags] = await Promise.all([getPublishedPosts(), getTags()]);
 
-  const posts =
+  const filteredPosts =
     selectedTag === '전체'
       ? allPosts
-      : allPosts.filter((post) =>
-          (post.tags || []).includes(selectedTag)
-        );
+      : allPosts.filter((post) => (post.tags ?? []).includes(selectedTag));
 
-  // 페이지네이션 계산
-  const totalCount = posts.length;
+  const totalCount = filteredPosts.length;
   const totalPages = Math.ceil(totalCount / pageSize);
+
   const start = (currentPage - 1) * pageSize;
-  const paginatedPosts = posts.slice(start, start + pageSize);
+  const paginatedPosts = filteredPosts.slice(start, start + pageSize);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:grid md:grid-cols-[75%_25%] gap-6">
-        <div className="order-2 md:order-1 space-y-6">
-          <div className="hidden md:block relative h-40 w-full overflow-hidden rounded-3xl">
+      <div className="flex flex-col gap-6 md:grid md:grid-cols-[75%_25%]">
+        <div className="order-2 space-y-6 md:order-1">
+          <div className="relative hidden h-40 w-full overflow-hidden rounded-3xl md:block">
             <Image
               src="/blogHeader.jpeg"
               alt="Blog Header"
@@ -63,13 +62,12 @@ export default async function Home({ searchParams }: HomeProps) {
           />
         </div>
 
-        <aside className="order-1 md:order-2 space-y-10 md:ml-2">
+        <aside className="order-1 space-y-10 md:order-2 md:ml-2">
           <TagSection tags={tags} />
         </aside>
       </div>
     </div>
   );
 }
-
 
 //앱 디렉토가 도메인에서 접근할떄 루트라고 보면 되고 이 하위에 페이지가 잇으면 루트를 햇을때 렌더링이 되는 페이지다
